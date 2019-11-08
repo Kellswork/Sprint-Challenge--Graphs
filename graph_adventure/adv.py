@@ -39,7 +39,7 @@ def all_rooms_visited(room_id):
     return True
 
 
-def goIntoFirstUnseenRoom(room_id):
+def unvisited_rooms(room_id):
     for direction, room in roomGraph[room_id][1].items():
         if room not in visited_room:
             traversalPath.append(direction)
@@ -48,8 +48,8 @@ def goIntoFirstUnseenRoom(room_id):
     print(" Sorry, You can't go there ")
 
 
-def room_directions(current_room, room):
-    for d, r in roomGraph[current_room][1].items():
+def room_directions(curr_room, room):
+    for d, r in roomGraph[curr_room][1].items():
         if r == room:
             return d
     return None
@@ -72,7 +72,7 @@ class Queue():
         return len(self.queue)
 
 
-def tryTracingBack():  # it's just a bfs
+def backtrack_direction():  # it's just a bfs
     visited = set()
     paths = {}
     q = Queue()
@@ -109,21 +109,18 @@ def tryTracingBack():  # it's just a bfs
 current_room = 0
 while True:
     while not all_rooms_visited(current_room):
-        # checks if any room around hasn't been seen
-        # mark every room as seen_room
-        # add it to traversal path
-        current_room = goIntoFirstUnseenRoom(current_room)
-    # goes into first unseen room around
-    # if no more rooms, loop back to the first room with other unseen rooms
-    # use bfs to get from the dead end to the room with unexplored rooms if we can
-    # mark every room it went throught as seen
+        current_room = unvisited_rooms(current_room)
 
-    tracedValues = tryTracingBack()  # returns (directions it went back through, destination room) or None
+    path_direction = backtrack_direction()
+    print('path_direction', path_direction)
+    # returns (directions it went back through, destination room) or None
     # if can't trace back, don't add to path
-    if tracedValues:
-        newPath = tracedValues[0]
-        traversalPath.extend(newPath)
-        current_room = tracedValues[1]
+    if path_direction:
+        new_path = path_direction[0]
+        print('new_path', new_path)
+        traversalPath.extend(new_path)
+        current_room = path_direction[1]
+        print('current_room', current_room)
     else:
         break
 
